@@ -22,6 +22,94 @@ model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniL
 def get_connection():
     return psycopg2.connect(config.DB_URI)
 
+
+def get_question_type(text):
+    if any(w in text for w in ["متى", "الساعة", "موعد", "وقت"]): return "time"
+    if any(w in text for w in ["أين", "القاعة", "مكان", "مكانها"]): return "location"
+    if any(w in text for w in ["يوم", "تاريخ"]): return "day"
+    if any(w in text for w in ["بريد", "email", "إيميل"]): return "email"
+    if any(w in text for w in ["مكتب"]): return "office"
+    if any(w in text for w in ["قسم"]): return "department"
+    if any(w in text for w in ["استشارة"]): return "consultation"
+    if any(w in text for w in ["أستاذ", "من يدرس", "دكتور", "مدرس"]): return "profe"
+    return None
+
+def semantic_search(text, records, field_index=0, threshold=0.5):
+    if not records:
+        return None, -1
+    targets = [row[field_index] for row in records]
+    embeddings = model.encode(targets, convert_to_tensor=True)
+    input_embedding = model.encode(text, convert_to_tensor=True)
+    cosine_scores = util.cos_sim(input_embedding, embeddings)[0]
+    best_score, best_index = torch.max(cosine_scores, dim=0)
+    if best_score >= threshold:
+        return records[best_index], best_score.item()
+    return None, -1
+
+def handle_message(update: Update, context):
+    text = update.message.text
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # احصل على جميع المواد
+    cur.execute("SELECT subject_code, subject_name FROM subjects")
+    subjects = cur.fetchall()
+
+    matched_subject, _ = semantic_search(text, subjects, field_index=1)
+    if not matched_subject:
+        update.message.reply_text("لم أتمكن من تحديد المادة 😢")
+        return
+
+    subject_code = matched_subject[0]
+    question_type = get_question_type(text)
+
+    if question_type == "time":
+        cur.execute("SELECT day, time FROM lectures WHERE subject_code=%s", (subject_code,))
+        result = cur.fetchone()
+        if result:
+            update.message.reply_text(f"📚 المحاضرة يوم {result[0]} الساعة {result[1]}")
+        else:
+            update.message.reply_text("لم أجد وقت المحاضرة.")
+    elif question_type == "location":
+        cur.execute("SELECT room FROM lectures WHERE subject_code=%s", (subject_code,))
+        result = cur.fetchone()
+        if result:
+            update.message.reply_text(f"📍 القاعة: {result[0]}")
+        else:
+            update.message.reply_text("لم أجد القاعة.")
+    elif question_type == "profe":
+        cur.execute("SELECT p.name FROM lectures l JOIN professors p ON l.professor_id = p.id WHERE l.subject_code = %s", (subject_code,))
+        result = cur.fetchone()
+        if result:
+            update.message.reply_text(f"👨‍🏫 المدرّس: {result[0]}")
+        else:
+            update.message.reply_text("لم أجد اسم الأستاذ.")
+    else:
+        update.message.reply_text("لم أفهم نوع السؤال 😕")
+
+    cur.close()
+    conn.close()
+
+# ربط أوامر البوت
+def start(update, context):
+    update.message.reply_text("مرحبًا! أرسل اسم المادة أو سؤال مثل 'متى موعد محاضرة الشبكات؟'")
+
+dispatcher.add_handler(CommandHandler("start", start))
+dispatcher.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+@app.route(f"/webhook/{config.TOKEN}", methods=["POST"])
+def webhook():
+    update = Update.de_json(request.get_json(force=True), bot)
+    dispatcher.process_update(update)
+    return "OK"
+
+@app.route("/")
+def index():
+    return "✅ التطبيق يعمل بنجاح"
+
+
+
+
 @app.route(f"/webhook/{config.TOKEN}", methods=["POST"])
 def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
