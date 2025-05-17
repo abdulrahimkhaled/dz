@@ -1,13 +1,13 @@
 
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import config
+import psycopg2
 
 app = Flask(__name__)
 app.secret_key = "d71f3b3e1d5a499f8f87cbb721e9f83e37a2f7dbb1c946efbc7ed308a4161e29"
 
 
-nlp = spacy.load("xx_ent_wiki_sm")
-model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+
 
 def get_connection():
     return psycopg2.connect(config.DB_URI)
