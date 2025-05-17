@@ -164,5 +164,4 @@ def roles():
     return render_template("roles.html", admins=data, role=session["role"])
 
 if __name__ == "__main__":
-    bot.set_webhook(url=f"{config.BASE_URL}/webhook/{config.TOKEN}")
     app.run(host="0.0.0.0", port=10000)
