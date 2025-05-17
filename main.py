@@ -2,6 +2,8 @@
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import config
 import psycopg2
+import os
+
 
 app = Flask(__name__)
 app.secret_key = "d71f3b3e1d5a499f8f87cbb721e9f83e37a2f7dbb1c946efbc7ed308a4161e29"
@@ -164,4 +166,5 @@ def roles():
     return render_template("roles.html", admins=data, role=session["role"])
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
