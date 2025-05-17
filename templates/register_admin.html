@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>تسجيل مشرف جديد</title>
+    <style>
+        body { font-family: Arial; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        form { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px #ccc; width: 300px; }
+        input { display: block; width: 100%; padding: 10px; margin-bottom: 15px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        <h3>تسجيل مشرف جديد</h3>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+        <input type="text" name="username" placeholder="اسم المستخدم" required>
+        <input type="password" name="password" placeholder="كلمة المرور" required>
+        <input type="submit" value="تسجيل">
+        <a href="{{ url_for('dashboard') }}">↩ العودة إلى لوحة التحكم</a>
+    </form>
+</body>
+</html>

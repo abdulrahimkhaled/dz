@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة التحكم</title>
+    <style>
+        body { font-family: Arial; background-color: #eef2f3; padding: 40px; }
+        h1 { text-align: center; color: #333; }
+        .nav-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .nav-item { background-color: #fff; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-decoration: none; color: #222; transition: 0.3s; }
+        .nav-item:hover { background-color: #dce3e9; transform: scale(1.02); }
+        .logout { text-align: center; margin-top: 40px; }
+        .logout a { color: red; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>مرحبًا، {{ admin }} 👋 (صلاحيات: {{ role }})</h1>
+    <div class="nav-container">
+        <a href="{{ url_for('subjects') }}" class="nav-item">إدارة المواد</a>
+        <a href="{{ url_for('professors') }}" class="nav-item">إدارة الأساتذة</a>
+        <a href="{{ url_for('lectures') }}" class="nav-item">إدارة المحاضرات</a>
+        <a href="{{ url_for('exams') }}" class="nav-item">إدارة الامتحانات</a>
+        <a href="{{ url_for('faq') }}" class="nav-item">الأسئلة المتكررة</a>
+        <a href="{{ url_for('user_courses') }}" class="nav-item">مواد المستخدمين</a>
+        {% if role == 'full' %}
+        <a href="{{ url_for('roles') }}" class="nav-item">إدارة الصلاحيات</a>
+        {% endif %}
+    </div>
+    <div class="logout">
+        <a href="{{ url_for('logout') }}">تسجيل الخروج</a>
+    </div>
+</body>
+</html>

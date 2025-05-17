@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>مواد المستخدمين</title>
+    <style>
+        body { font-family: Arial; padding: 40px; background-color: #f5f5f5; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 12px; border: 1px solid #ccc; text-align: center; }
+        .search-box { margin-bottom: 15px; text-align: right; }
+        .search-box input { width: 300px; padding: 8px; }
+        .back-link { margin-top: 20px; display: block; text-align: center; }
+    </style>
+    <script>
+        function searchUsers() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let rows = document.querySelectorAll("table tbody tr");
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>المواد المسجلة للمستخدمين</h2>
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="searchUsers()" placeholder="ابحث عن مستخدم أو مادة...">
+    </div>
+    <table>
+        <thead>
+            <tr><th>رقم المستخدم</th><th>المادة</th></tr>
+        </thead>
+        <tbody>
+        {% for row in user_courses %}
+            <tr>
+                <td>{{ row.user_id }}</td>
+                <td>{{ row.subject_name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a class="back-link" href="{{ url_for('dashboard') }}">↩ العودة إلى لوحة التحكم</a>
+</body>
+</html>

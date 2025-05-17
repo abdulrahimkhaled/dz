@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة الأساتذة</title>
+    <style>
+        body { font-family: Arial; padding: 40px; background-color: #f5f5f5; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 12px; border: 1px solid #ccc; text-align: center; }
+        input[type="text"], input[type="email"] { padding: 8px; width: 100%; }
+        form.add-form { margin-bottom: 20px; background: white; padding: 20px; border-radius: 10px; }
+        .search-box { margin-bottom: 15px; text-align: right; }
+        .search-box input { width: 300px; padding: 8px; }
+        .actions form { display: inline-block; margin: 0 2px; }
+        .back-link { margin-top: 20px; display: block; text-align: center; }
+    </style>
+    <script>
+        function searchProfessors() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let rows = document.querySelectorAll("table tbody tr");
+            rows.forEach(row => {
+                let inputs = row.querySelectorAll("input[type='text'], input[type='email']");
+                let rowText = Array.from(inputs).map(inp => inp.value.toLowerCase()).join(" ");
+                row.style.display = rowText.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>إدارة الأساتذة</h2>
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="searchProfessors()" placeholder="ابحث عن أستاذ...">
+    </div>
+    {% if role != 'view' %}
+<form method="POST" class="add-form">
+        <h3>إضافة أستاذ جديد</h3>
+        <label>الاسم:</label><input type="text" name="name" required>
+        <label>القسم:</label><input type="text" name="department" required>
+        <label>البريد الإلكتروني:</label><input type="email" name="email" required>
+        <label>المكتب:</label><input type="text" name="office">
+        <label>الاستشارة:</label><input type="text" name="consultation">
+        <input type="submit" value="إضافة">
+    </form>
+{% endif %}
+    <table>
+        <thead>
+            <tr><th>الاسم</th><th>القسم</th><th>البريد</th><th>المكتب</th><th>الاستشارة</th><th>إجراءات</th></tr>
+        </thead>
+        <tbody>
+        {% for prof in professors %}
+            <tr>
+                <form method="POST" action="{{ url_for('edit_professor', professor_id=prof.id) }}">
+                <td><input type="text" name="name" value="{{ prof.name }}"></td>
+                <td><input type="text" name="department" value="{{ prof.department }}"></td>
+                <td><input type="email" name="email" value="{{ prof.email }}"></td>
+                <td><input type="text" name="office" value="{{ prof.office }}"></td>
+                <td><input type="text" name="consultation" value="{{ prof.consultation }}"></td>
+                {% if role != 'view' %}<td class="actions">
+                    <input type="submit" value="تعديل">
+                    <form method="GET" action="{{ url_for('delete_professor', professor_id=prof.id) }}" style="display:inline;">
+                        <button type="submit">حذف</button>
+                    </form>
+                </td>{% endif %}
+                </form>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a class="back-link" href="{{ url_for('dashboard') }}">↩ العودة إلى لوحة التحكم</a>
+</body>
+</html>

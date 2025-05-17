@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة صلاحيات المشرفين</title>
+    <style>
+        body { font-family: Arial; background-color: #f0f0f0; padding: 40px; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 12px; border: 1px solid #ccc; text-align: center; }
+        select, button { padding: 8px; width: 100%; }
+        form { display: inline-block; width: 100%; }
+        .back-link { margin-top: 20px; display: block; text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>إدارة صلاحيات المشرفين</h2>
+    <table>
+        <thead>
+            <tr><th>المعرف</th><th>اسم المستخدم</th><th>الصلاحية الحالية</th><th>تعديل الصلاحية</th></tr>
+        </thead>
+        <tbody>
+        {% for admin in admins %}
+            <tr>
+                <td>{{ admin.id }}</td>
+                <td>{{ admin.username }}</td>
+                <td>{{ admin.role }}</td>
+                <td>
+                    <form method="POST">
+                        <input type="hidden" name="admin_id" value="{{ admin.id }}">
+                        <select name="role">
+                            <option value="full" {% if admin.role == 'full' %}selected{% endif %}>كاملة</option>
+                            <option value="view" {% if admin.role == 'view' %}selected{% endif %}>عرض فقط</option>
+                        </select>
+                        <button type="submit">تحديث</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a class="back-link" href="{{ url_for('dashboard') }}">↩ العودة إلى لوحة التحكم</a>
+</body>
+</html>

@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة المحاضرات</title>
+    <style>
+        body { font-family: Arial; padding: 40px; background-color: #f5f5f5; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 12px; border: 1px solid #ccc; text-align: center; }
+        input, select { padding: 8px; width: 100%; }
+        form.add-form { margin-bottom: 20px; background: white; padding: 20px; border-radius: 10px; }
+        .search-box { margin-bottom: 15px; text-align: right; }
+        .search-box input { width: 300px; padding: 8px; }
+        .actions form { display: inline-block; margin: 0 2px; }
+        .back-link { margin-top: 20px; display: block; text-align: center; }
+    </style>
+    <script>
+        function searchLectures() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let rows = document.querySelectorAll("table tbody tr");
+            rows.forEach(row => {
+                let inputs = row.querySelectorAll("input, select");
+                let rowText = Array.from(inputs).map(inp => inp.value.toLowerCase()).join(" ");
+                row.style.display = rowText.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>إدارة المحاضرات</h2>
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="searchLectures()" placeholder="ابحث عن محاضرة...">
+    </div>
+    {% if role != 'view' %}
+<form method="POST" class="add-form">
+        <h3>إضافة محاضرة</h3>
+        <label>المادة:</label>
+        <select name="subject_code" required>
+            {% for subject in subjects %}
+                <option value="{{ subject.subject_code }}">{{ subject.subject_name }}</option>
+            {% endfor %}
+        </select>
+        <label>الأستاذ:</label>
+        <select name="professor_id" required>
+            {% for prof in professors %}
+                <option value="{{ prof.id }}">{{ prof.name }}</option>
+            {% endfor %}
+        </select>
+        <label>اليوم:</label><input type="text" name="day" required>
+        <label>الوقت:</label><input type="text" name="time" required>
+        <label>القاعة:</label><input type="text" name="room" required>
+        <input type="submit" value="إضافة">
+    </form>
+
+    <table>
+        <thead>
+            <tr><th>المادة</th><th>الأستاذ</th><th>اليوم</th><th>الوقت</th><th>القاعة</th><th>إجراءات</th></tr>
+        </thead>
+        <tbody>
+        {% for lec in lectures %}
+            <tr>
+                <form method="POST" action="{{ url_for('edit_lecture', lecture_id=lec.id) }}">
+                <td>
+                    <select name="subject_code">
+                        {% for subject in subjects %}
+                            <option value="{{ subject.subject_code }}" {% if subject.subject_code == lec.subject_code %}selected{% endif %}>{{ subject.subject_name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="professor_id">
+                        {% for prof in professors %}
+                            <option value="{{ prof.id }}" {% if prof.id == lec.professor_id %}selected{% endif %}>{{ prof.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td><input type="text" name="day" value="{{ lec.day }}"></td>
+                <td><input type="text" name="time" value="{{ lec.time }}"></td>
+                <td><input type="text" name="room" value="{{ lec.room }}"></td>
+                {% if role != 'view' %}<td class="actions">
+                    <input type="submit" value="تعديل">
+                    <form method="GET" action="{{ url_for('delete_lecture', lecture_id=lec.id) }}" style="display:inline;">
+                        <button type="submit">حذف</button>
+                    </form>
+                </td>{% endif %}
+                </form>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a class="back-link" href="{{ url_for('dashboard') }}">↩ العودة إلى لوحة التحكم</a>
+</body>
+</html>
+
+{% endif %}
