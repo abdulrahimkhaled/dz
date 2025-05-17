@@ -1,1 +1,141 @@
 
+/* إعدادات عامة */
+body {
+    margin: 0;
+    font-family: 'Cairo', sans-serif;
+    background-color: #0a0033;
+    color: #ffffff;
+    direction: rtl;
+}
+
+a {
+    text-decoration: none;
+}
+
+h1, h2, p {
+    margin: 0;
+}
+
+/* الصفحة الرئيسية */
+.home-page {
+    background: linear-gradient(180deg, #0a0033 0%, #1a0055 100%);
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    position: relative;
+}
+
+.home-page .overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: radial-gradient(circle at center, rgba(255, 0, 255, 0.1), rgba(0, 0, 255, 0.2));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.home-page .centered h1 {
+    font-size: 6rem;
+    color: #ff00cc;
+    text-shadow: 0 0 20px #ff00cc;
+}
+
+.home-page .centered p {
+    font-size: 1.8rem;
+    margin: 1rem 0;
+    color: #ffffff;
+}
+
+.home-page .btn {
+    background-color: #9900ff;
+    padding: 12px 30px;
+    border-radius: 30px;
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    box-shadow: 0 0 15px #9900ff;
+    transition: background 0.3s;
+}
+.home-page .btn:hover {
+    background-color: #cc00ff;
+}
+
+/* صفحة تسجيل الدخول */
+.login-page {
+    background: linear-gradient(to bottom, #0a0033, #1a003d);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px #9900ff;
+    text-align: center;
+    width: 300px;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 12px 0;
+    border: none;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+}
+
+.login-container button {
+    background-color: #9900ff;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.login-container .error {
+    color: #ff6666;
+    margin-bottom: 10px;
+}
+
+/* لوحة التحكم */
+.dashboard-page {
+    background: linear-gradient(to bottom, #0a0033, #1a003d);
+    min-height: 100vh;
+    padding: 40px;
+}
+
+.dashboard-container h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+}
+
+.nav-links li {
+    margin: 10px 0;
+}
+
+.nav-links a {
+    display: block;
+    padding: 10px 20px;
+    background-color: #9900ff;
+    color: white;
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: #cc00ff;
+}
