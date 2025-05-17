@@ -5,7 +5,7 @@ import config
 import os
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key"
+app.secret_key = "rjkhiyu6589u5096yjtkhj695ytkjy95jywghjki6oj5"
 
 def get_connection():
     return psycopg2.connect(config.DB_URI)
@@ -72,5 +72,5 @@ def lectures():
     return render_template("lectures.html")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
