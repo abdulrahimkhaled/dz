@@ -12,9 +12,7 @@ app.secret_key = "d71f3b3e1d5a499f8f87cbb721e9f83e37a2f7dbb1c946efbc7ed308a4161e
 def get_connection():
     return psycopg2.connect(config.DB_URI)
 
-@app.route(f"/webhook/{config.TOKEN}", methods=["POST"])
-def webhook():
-    return "OK"
+
 
 @app.route("/")
 def index():
