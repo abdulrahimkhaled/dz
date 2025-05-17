@@ -8,7 +8,6 @@ import spacy
 from sentence_transformers import SentenceTransformer, util
 import torch
 import re
-from spell_correction_module import correct_text
 
 app = Flask(__name__)
 app.secret_key = "your-secret-key"
