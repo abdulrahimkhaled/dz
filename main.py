@@ -1,76 +1,50 @@
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, session, flash
 import psycopg2
-import config
+import bcrypt
 import os
 
 app = Flask(__name__)
-app.secret_key = "rjkhiyu6589u5096yjtkhj695ytkjy95jywghjki6oj5"
+app.secret_key = "your-secret-key"
 
-def get_connection():
-    return psycopg2.connect(config.DB_URI)
+def get_db_connection():
+    return psycopg2.connect(
+        dbname="postgres",
+        user="postgres.yejjnjtxqeguwelcrngz",
+        password="dzireedzireE01",
+        host="aws-0-eu-central-1.pooler.supabase.com",
+        port="6543"
+    )
 
-@app.route("/")
-def home():
-    return redirect("/login")
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-        conn = get_connection()
+        conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT role FROM admins WHERE username = %s AND password_hash = %s", (username, password))
-        result = cur.fetchone()
+        cur.execute("SELECT id, password_hash, role FROM admins WHERE username=%s", (username,))
+        user = cur.fetchone()
         cur.close()
         conn.close()
 
-        if result:
-            session["username"] = username
-            session["role"] = result[0]
-            return redirect("/dashboard")
+        if user and bcrypt.checkpw(password.encode('utf-8'), user[1].encode('utf-8')):
+            session['user_id'] = user[0]
+            session['role'] = user[2]
+            return redirect('/dashboard')
         else:
-            return render_template("login.html", error="بيانات الدخول غير صحيحة")
+            flash('اسم المستخدم أو كلمة المرور غير صحيحة', 'error')
+            return redirect('/login')
+    return render_template('login.html')
 
-    return render_template("login.html")
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/login")
-
-@app.route("/dashboard")
+@app.route('/dashboard')
 def dashboard():
-    if "username" not in session:
-        return redirect("/login")
-    return render_template("dashboard.html")
+    if 'user_id' in session:
+        return "أهلاً بك في لوحة التحكم!"
+    return redirect('/login')
 
-@app.route("/subjects")
-def subjects():
-    if "username" not in session:
-        return redirect("/login")
-    return render_template("subjects.html")
-
-@app.route("/professors")
-def professors():
-    if "username" not in session:
-        return redirect("/login")
-    return render_template("professors.html")
-
-@app.route("/faq")
-def faq():
-    if "username" not in session:
-        return redirect("/login")
-    return render_template("faq.html")
-
-@app.route("/lectures")
-def lectures():
-    if "username" not in session:
-        return redirect("/login")
-    return render_template("lectures.html")
-
-if __name__ == "__main__":
-     port = int(os.environ.get("PORT", 10000))
-     app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
