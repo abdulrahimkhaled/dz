@@ -43,8 +43,8 @@ def login():
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' in session:
-        return "أهلاً بك في لوحة التحكم!"
-    return redirect('/login')
+        return "أهلاً في لوحة التحكم!"
+    return redirect('/dashboard')
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
