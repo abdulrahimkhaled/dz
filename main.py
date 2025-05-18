@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, redirect, session, flash
 import psycopg2
 import config
+import bcrypt
 import os
 
 app = Flask(__name__)
@@ -30,13 +31,13 @@ def login():
         cur.close()
         conn.close()
 
-       if result:
-            session["username"] = username
-            session["role"] = user[0]
-            return redirect("/dashboard")
+        if user and bcrypt.checkpw(password.encode('utf-8'), user[1].encode('utf-8')):
+            session['user_id'] = user[0]
+            session['role'] = user[2]
+            return redirect('/dashboard')
         else:
-            return render_template("login.html", error="بيانات الدخول غير صحيحة")
-
+            flash('اسم المستخدم أو كلمة المرور غير صحيحة', 'error')
+            return redirect('/login')
     return render_template('login.html')
 
 @app.route('/dashboard')
@@ -48,4 +49,3 @@ def dashboard():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
-    print(password)
